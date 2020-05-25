@@ -4,14 +4,15 @@ class TimeHandler
 
   FORMATS = { 'year' => '%Y', 'month' => '%m', 'day' => '%d',
               'hour' => '%H', 'minute' => '%m', 'second' => '%S' }.freeze
-  
+
   def initialize(params)
+    @params = params
     @valid_format = ''
     @unknown_format = []
   end
 
-  def call(params)
-    params.each do |format|
+  def call
+    @params['format'].split(',').each do |format|
       if FORMATS[format]
         @valid_format += (' ' + FORMATS[format])
       else
