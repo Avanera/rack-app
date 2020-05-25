@@ -2,42 +2,21 @@ require_relative 'time_handler'
 
 class App
   def call(env)
-    @request = Rack::Request.new(env)
-    @response = Rack::Response.new
-    handle_time_request
-  end
+    request = Rack::Request.new(env)
+    return create_response('Page not found', 404) if request.path != '/time'
+    return create_response('No time format mentioned', 400) if request.params['format'].nil?
 
-  private
+    time = TimeHandler.new(request.params)
+    time.call
 
-  def handle_time_request
-    @response['Content-Type'] = 'text/plain'
-    return not_found_response if @request.path != '/time'
-    return no_format_response if @request.params['format'].nil?
-
-    @time = TimeHandler.new(@request.params)
-    @time.call(@request.params['format'].split(','))
-    perform_format_response
-  end
-
-  def not_found_response
-    @response.write 'Page not found'
-    @response.status = 404
-    @response.finish
-  end
-
-  def no_format_response
-    @response.write 'No time format mentioned'
-    @response.status = 400
-    @response.finish
-  end
-
-  def perform_format_response
-    if @time.valid?
-      @response.write @time.formatted.to_s
+    if time.valid?
+      create_response(time.formatted.to_s, 200)
     else
-      @response.write "Unknown time format #{@time.unknown_format}"
-      @response.status = 400
+      create_response("Unknown time format #{time.unknown_format}", 400)
     end
-    @response.finish
+  end
+
+  def create_response(body, status)
+    Rack::Response.new([body], status, { 'Content-Type' => 'text/plain' }).finish
   end
 end
