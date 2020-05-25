@@ -1,7 +1,5 @@
 class TimeHandler
 
-  attr_reader :unknown_format
-
   FORMATS = { 'year' => '%Y', 'month' => '%m', 'day' => '%d',
               'hour' => '%H', 'minute' => '%m', 'second' => '%S' }.freeze
 
@@ -27,5 +25,9 @@ class TimeHandler
 
   def formatted
     Time.now.strftime(@valid_format)
+  end
+
+  def unknown_time_format
+    @unknown_format.map { |i| "'" + i.to_s + "'" }.join(",")
   end
 end

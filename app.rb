@@ -12,7 +12,7 @@ class App
     if time.valid?
       create_response(time.formatted.to_s, 200)
     else
-      create_response("Unknown time format #{time.unknown_format}", 400)
+      create_response("Unknown time format: #{time.unknown_time_format}", 400)
     end
   end
 
